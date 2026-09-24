@@ -392,62 +392,39 @@ function toggleComplete(id) {
 
 function renderTasks() {
 
-    const search =
-        searchInput.value
-            .toLowerCase()
-            .trim();
+    const searchText = searchInput.value
+        .trim()
+        .toLowerCase();
 
+    const selectedPriority = filterPriority.value;
+    const selectedStatus = filterStatus.value;
 
-    const selectedPriority =
-        filterPriority.value;
+    const filteredTasks = tasks.filter(function(task) {
 
-    const selectedStatus =
-        filterStatus.value;
+        const title = String(task.title || "").toLowerCase();
+        const subject = String(task.subject || "").toLowerCase();
 
+        const matchesSearch =
+            searchText === "" ||
+            title.includes(searchText) ||
+            subject.includes(searchText);
 
-    let filteredTasks =
-        tasks.filter(task => {
+        const matchesPriority =
+            selectedPriority === "All" ||
+            task.priority === selectedPriority;
 
-            const matchesSearch =
-                task.title
-                    .toLowerCase()
-                    .includes(search)
-                ||
-                task.subject
-                    .toLowerCase()
-                    .includes(search);
+        const matchesStatus =
+            selectedStatus === "All" ||
+            (selectedStatus === "Completed" && task.completed) ||
+            (selectedStatus === "Pending" && !task.completed);
 
+        return (
+            matchesSearch &&
+            matchesPriority &&
+            matchesStatus
+        );
 
-            const matchesPriority =
-                selectedPriority === "All"
-                ||
-                task.priority ===
-                selectedPriority;
-
-
-            const matchesStatus =
-                selectedStatus === "All"
-                ||
-                (
-                    selectedStatus === "Completed"
-                    &&
-                    task.completed
-                )
-                ||
-                (
-                    selectedStatus === "Pending"
-                    &&
-                    !task.completed
-                );
-
-
-            return (
-                matchesSearch &&
-                matchesPriority &&
-                matchesStatus
-            );
-
-        });
+    });
 
 
     if (filteredTasks.length === 0) {
@@ -462,181 +439,111 @@ function renderTasks() {
     }
 
 
-    /* Sort by date */
+    filteredTasks.sort(function(a, b) {
 
-    filteredTasks.sort(
-        (a, b) =>
-            new Date(a.date) -
-            new Date(b.date)
-    );
+        return new Date(a.date) - new Date(b.date);
+
+    });
 
 
-    taskList.innerHTML =
-        filteredTasks.map(
-            task => {
+    taskList.innerHTML = filteredTasks.map(function(task) {
 
-                const priorityClass =
-                    task.priority
-                        .toLowerCase();
+        const priorityClass =
+            String(task.priority).toLowerCase();
 
+        return `
 
-                return `
+            <div class="task-card ${task.completed ? "completed" : ""}">
 
-                    <div class="task-card
-                        ${task.completed
-                            ? "completed"
-                            : ""}">
+                <div class="task-header">
 
-                        <div class="task-header">
+                    <div class="task-title">
+                        ${escapeHTML(task.title)}
+                    </div>
 
-                            <div class="task-title">
+                    <span class="
+                        badge
+                        priority-${priorityClass}
+                    ">
+                        ${task.priority}
+                    </span>
 
-                                ${escapeHTML(
-                                    task.title
-                                )}
-
-                            </div>
-
-                            <span class="
-                                badge
-                                priority-${priorityClass}
-                            ">
-
-                                ${task.priority}
-
-                            </span>
-
-                        </div>
+                </div>
 
 
-                        <div class="task-details">
+                <div class="task-details">
 
-                            <span class="
-                                badge
-                                subject-badge
-                            ">
+                    <span class="badge subject-badge">
+                        📚 ${escapeHTML(task.subject)}
+                    </span>
 
-                                📚
-                                ${escapeHTML(
-                                    task.subject
-                                )}
+                    <span class="badge">
+                        📅 ${formatDate(task.date)}
+                    </span>
 
-                            </span>
+                    <span class="badge">
+                        ${task.completed ? "✅ Completed" : "⏳ Pending"}
+                    </span>
 
-
-                            <span class="badge">
-
-                                📅
-                                ${formatDate(
-                                    task.date
-                                )}
-
-                            </span>
+                </div>
 
 
-                            <span class="badge">
+                <div class="progress-container">
 
-                                ${
-                                    task.completed
-                                    ? "✅ Completed"
-                                    : "⏳ Pending"
-                                }
+                    <div class="progress-bar">
 
-                            </span>
-
-                        </div>
-
-
-                        <div class="
-                            progress-container
-                        ">
-
-                            <div class="
-                                progress-bar
-                            ">
-
-                                <div
-                                    class="
-                                    progress-fill
-                                    "
-                                    style="
-                                    width:
-                                    ${task.progress}%
-                                    "
-                                ></div>
-
-                            </div>
-
-
-                            <span class="
-                                progress-text
-                            ">
-
-                                ${task.progress}%
-                                completed
-
-                            </span>
-
-                        </div>
-
-
-                        <div class="
-                            task-actions
-                        ">
-
-                            <button
-                                class="
-                                complete-btn
-                                "
-                                onclick="
-                                toggleComplete(
-                                    ${task.id}
-                                )">
-
-                                ${
-                                    task.completed
-                                    ? "↩️ Mark Pending"
-                                    : "✅ Complete"
-                                }
-
-                            </button>
-
-
-                            <button
-                                class="edit-btn"
-                                onclick="
-                                editTask(
-                                    ${task.id}
-                                )">
-
-                                ✏️ Edit
-
-                            </button>
-
-
-                            <button
-                                class="delete-btn"
-                                onclick="
-                                deleteTask(
-                                    ${task.id}
-                                )">
-
-                                🗑️ Delete
-
-                            </button>
-
-                        </div>
+                        <div
+                            class="progress-fill"
+                            style="width: ${task.progress}%"
+                        ></div>
 
                     </div>
 
-                `;
+                    <span class="progress-text">
+                        ${task.progress}% completed
+                    </span>
 
-            }
-        ).join("");
-
-}
+                </div>
 
 
+                <div class="task-actions">
+
+                    <button
+                        class="complete-btn"
+                        onclick="toggleComplete(${task.id})"
+                    >
+                        ${
+                            task.completed
+                            ? "↩️ Mark Pending"
+                            : "✅ Complete"
+                        }
+                    </button>
+
+
+                    <button
+                        class="edit-btn"
+                        onclick="editTask(${task.id})"
+                    >
+                        ✏️ Edit
+                    </button>
+
+
+                    <button
+                        class="delete-btn"
+                        onclick="deleteTask(${task.id})"
+                    >
+                        🗑️ Delete
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }).join("");
+
+} 
 
 /* =========================================
    FORMAT DATE
