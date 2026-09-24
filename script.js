@@ -1087,24 +1087,17 @@ weeklyBtn.addEventListener(
    SEARCH / FILTER
 ========================================= */
 
-searchInput.addEventListener(
-    "input",
-    renderTasks
-);
+searchInput.addEventListener("input", function () {
+    renderTasks();
+});
 
+filterPriority.addEventListener("change", function () {
+    renderTasks();
+});
 
-filterPriority.addEventListener(
-    "change",
-    renderTasks
-);
-
-
-filterStatus.addEventListener(
-    "change",
-    renderTasks
-);
-
-
+filterStatus.addEventListener("change", function () {
+    renderTasks();
+});
 
 /* =========================================
    DARK MODE
