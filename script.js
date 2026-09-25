@@ -1434,35 +1434,6 @@ function renderAll() {
 }
 
 
-
-/* =========================================
-   START APPLICATION
-========================================= */
-
-renderAll();
-function renderAll() {
-
-    renderTasks();
-
-    updateStatistics();
-
-    renderSubjectProgress();
-
-    renderDailyPlanner();
-
-    renderGoals();
-
-    updateRecommendation();
-
-    updateTimerDisplay();
-
-    checkReminders();
-
-    generateAdvancedRecommendations();
-
-}
-
-
 /* =========================================
    NOTIFICATIONS & REMINDERS
 ========================================= */
@@ -2145,13 +2116,37 @@ function generateAdvancedRecommendations() {
 
 }
 
+/* =========================================
+   RENDER EVERYTHING
+========================================= */
+
+function renderAll() {
+
+    renderTasks();
+
+    updateStatistics();
+
+    renderSubjectProgress();
+
+    renderDailyPlanner();
+
+    renderGoals();
+
+    updateRecommendation();
+
+    updateTimerDisplay();
+
+    checkReminders();
+
+    generateAdvancedRecommendations();
+
+}
+
 
 /* =========================================
-   START NEW FEATURES
+   START APPLICATION
 ========================================= */
 
 updateNotificationStatus();
 
-checkReminders();
-
-generateAdvancedRecommendations();
+renderAll();
