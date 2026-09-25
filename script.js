@@ -1574,7 +1574,11 @@ function updateNotificationStatus() {
 /* Check today's tasks */
 
 function checkReminders() {
-
+   if (
+    localStorage.getItem("notificationsDisabled") === "true"
+) {
+    return;
+}
     reminderList.innerHTML = "";
 
 
