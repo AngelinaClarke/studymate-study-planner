@@ -1443,6 +1443,11 @@ const enableNotificationsBtn =
         "enableNotificationsBtn"
     );
 
+const disableNotificationsBtn =
+    document.getElementById(
+        "disableNotificationsBtn"
+    );
+
 const notificationStatus =
     document.getElementById(
         "notificationStatus"
@@ -1475,20 +1480,45 @@ enableNotificationsBtn.addEventListener(
 
         if (permission === "granted") {
 
-            notificationStatus.textContent =
-                "✅ Notifications are enabled.";
+    localStorage.removeItem(
+        "notificationsDisabled"
+    );
 
-            new Notification(
-                "StudyMate 🔔",
-                {
-                    body:
-                        "Study reminders are now enabled!"
-                }
-            );
+           /* Disable notifications */
 
-            checkReminders();
+disableNotificationsBtn.addEventListener(
+    "click",
+    function() {
 
+        localStorage.setItem(
+            "notificationsDisabled",
+            "true"
+        );
+
+        notificationStatus.textContent =
+            "🔕 Notifications are disabled.";
+
+        alert(
+            "StudyMate notifications have been disabled."
+        );
+
+    }
+);
+   
+         notificationStatus.textContent =
+        "✅ Notifications are enabled.";
+
+    new Notification(
+        "StudyMate 🔔",
+        {
+            body:
+                "Study reminders are now enabled!"
         }
+    );
+
+    checkReminders();
+
+}
         else {
 
             notificationStatus.textContent =
