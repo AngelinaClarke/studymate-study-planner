@@ -1427,6 +1427,10 @@ function renderAll() {
 
     updateTimerDisplay();
 
+    checkReminders();
+
+    generateAdvancedRecommendations();
+
 }
 
 
@@ -1436,3 +1440,718 @@ function renderAll() {
 ========================================= */
 
 renderAll();
+function renderAll() {
+
+    renderTasks();
+
+    updateStatistics();
+
+    renderSubjectProgress();
+
+    renderDailyPlanner();
+
+    renderGoals();
+
+    updateRecommendation();
+
+    updateTimerDisplay();
+
+    checkReminders();
+
+    generateAdvancedRecommendations();
+
+}
+
+
+/* =========================================
+   NOTIFICATIONS & REMINDERS
+========================================= */
+
+const enableNotificationsBtn =
+    document.getElementById(
+        "enableNotificationsBtn"
+    );
+
+const notificationStatus =
+    document.getElementById(
+        "notificationStatus"
+    );
+
+const reminderList =
+    document.getElementById(
+        "reminderList"
+    );
+
+
+/* Request notification permission */
+
+enableNotificationsBtn.addEventListener(
+    "click",
+    async function() {
+
+        if (!("Notification" in window)) {
+
+            notificationStatus.textContent =
+                "❌ Your browser does not support notifications.";
+
+            return;
+        }
+
+
+        const permission =
+            await Notification.requestPermission();
+
+
+        if (permission === "granted") {
+
+            notificationStatus.textContent =
+                "✅ Notifications are enabled.";
+
+            new Notification(
+                "StudyMate 🔔",
+                {
+                    body:
+                        "Study reminders are now enabled!"
+                }
+            );
+
+            checkReminders();
+
+        }
+        else {
+
+            notificationStatus.textContent =
+                "❌ Notification permission was denied.";
+
+        }
+
+    }
+);
+
+
+/* Display notification status */
+
+function updateNotificationStatus() {
+
+    if (!("Notification" in window)) {
+
+        notificationStatus.textContent =
+            "Notifications are not supported.";
+
+        return;
+    }
+
+
+    if (
+        Notification.permission ===
+        "granted"
+    ) {
+
+        notificationStatus.textContent =
+            "✅ Notifications are enabled.";
+
+    }
+    else if (
+        Notification.permission ===
+        "denied"
+    ) {
+
+        notificationStatus.textContent =
+            "❌ Notifications are blocked.";
+
+    }
+    else {
+
+        notificationStatus.textContent =
+            "Notifications are not enabled.";
+
+    }
+
+}
+
+
+/* Check today's tasks */
+
+function checkReminders() {
+
+    reminderList.innerHTML = "";
+
+
+    if (tasks.length === 0) {
+
+        reminderList.innerHTML = `
+            <p>No study tasks available.</p>
+        `;
+
+        return;
+    }
+
+
+    const today =
+        new Date()
+            .toISOString()
+            .split("T")[0];
+
+
+    const todayTasks =
+        tasks.filter(function(task) {
+
+            return (
+                task.date === today &&
+                !task.completed
+            );
+
+        });
+
+
+    if (todayTasks.length === 0) {
+
+        reminderList.innerHTML = `
+            <p>🎉 No pending tasks for today!</p>
+        `;
+
+        return;
+    }
+
+
+    todayTasks.forEach(function(task) {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "reminder-item";
+
+
+        item.innerHTML = `
+            <strong>
+                📚 ${escapeHTML(task.title)}
+            </strong>
+
+            <p>
+                Subject:
+                ${escapeHTML(task.subject)}
+            </p>
+
+            <p>
+                Priority:
+                ${task.priority}
+            </p>
+
+            <p>
+                Progress:
+                ${task.progress}%
+            </p>
+        `;
+
+
+        reminderList.appendChild(item);
+
+
+        /* Send browser notification */
+
+        if (
+            "Notification" in window &&
+            Notification.permission ===
+            "granted"
+        ) {
+
+            const reminderKey =
+                "reminded_" +
+                task.id +
+                "_" +
+                today;
+
+
+            if (
+                !localStorage.getItem(
+                    reminderKey
+                )
+            ) {
+
+                new Notification(
+                    "StudyMate Reminder 📚",
+                    {
+                        body:
+                            task.title +
+                            " is scheduled for today."
+                    }
+                );
+
+
+                localStorage.setItem(
+                    reminderKey,
+                    "true"
+                );
+
+            }
+
+        }
+
+    });
+
+}
+
+
+/* Run reminder check every minute */
+
+setInterval(
+    checkReminders,
+    60 * 1000
+);
+
+
+/* =========================================
+   AUTOMATIC STUDY SCHEDULE
+========================================= */
+
+const generateScheduleBtn =
+    document.getElementById(
+        "generateScheduleBtn"
+    );
+
+const automaticSchedule =
+    document.getElementById(
+        "automaticSchedule"
+    );
+
+
+generateScheduleBtn.addEventListener(
+    "click",
+    generateAutomaticSchedule
+);
+
+
+function generateAutomaticSchedule() {
+
+    automaticSchedule.innerHTML = "";
+
+
+    const pendingTasks =
+        tasks
+            .filter(function(task) {
+
+                return !task.completed;
+
+            })
+            .sort(function(a, b) {
+
+                /* High priority first */
+
+                const priorityOrder = {
+
+                    High: 1,
+                    Medium: 2,
+                    Low: 3
+
+                };
+
+
+                const priorityDifference =
+                    priorityOrder[a.priority] -
+                    priorityOrder[b.priority];
+
+
+                if (
+                    priorityDifference !== 0
+                ) {
+
+                    return priorityDifference;
+
+                }
+
+
+                /* Lower progress first */
+
+                return (
+                    Number(a.progress) -
+                    Number(b.progress)
+                );
+
+            });
+
+
+    if (pendingTasks.length === 0) {
+
+        automaticSchedule.innerHTML = `
+            <div class="schedule-item">
+                🎉 All tasks are completed!
+            </div>
+        `;
+
+        return;
+    }
+
+
+    pendingTasks.forEach(
+        function(task, index) {
+
+            const studyNumber =
+                index + 1;
+
+
+            let recommendation;
+
+
+            if (
+                task.priority ===
+                "High"
+            ) {
+
+                recommendation =
+                    "Focus on this task first.";
+
+            }
+            else if (
+                Number(task.progress) < 30
+            ) {
+
+                recommendation =
+                    "Give this task extra study time.";
+
+            }
+            else {
+
+                recommendation =
+                    "Continue making steady progress.";
+
+            }
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "schedule-item";
+
+
+            item.innerHTML = `
+
+                <h3>
+                    📖 Study Session ${studyNumber}
+                </h3>
+
+                <p>
+                    <strong>
+                        Task:
+                    </strong>
+
+                    ${escapeHTML(
+                        task.title
+                    )}
+                </p>
+
+                <p>
+                    📚 Subject:
+                    ${escapeHTML(
+                        task.subject
+                    )}
+                </p>
+
+                <p>
+                    📅 Date:
+                    ${formatDate(
+                        task.date
+                    )}
+                </p>
+
+                <p>
+                    ⚡ Priority:
+                    ${task.priority}
+                </p>
+
+                <p>
+                    📊 Progress:
+                    ${task.progress}%
+                </p>
+
+                <p>
+                    💡 ${recommendation}
+                </p>
+
+            `;
+
+
+            automaticSchedule.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   ADVANCED STUDY RECOMMENDATIONS
+========================================= */
+
+const advancedRecommendation =
+    document.getElementById(
+        "advancedRecommendation"
+    );
+
+
+function generateAdvancedRecommendations() {
+
+    if (tasks.length === 0) {
+
+        advancedRecommendation.innerHTML =
+            "Add some tasks to receive recommendations.";
+
+        return;
+    }
+
+
+    const recommendations = [];
+
+
+    const pendingTasks =
+        tasks.filter(function(task) {
+
+            return !task.completed;
+
+        });
+
+
+    if (pendingTasks.length === 0) {
+
+        advancedRecommendation.innerHTML = `
+            <div class="recommendation-item">
+                🎉 Excellent! All your study tasks are completed.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /* High priority recommendation */
+
+    const highPriorityTask =
+        pendingTasks.find(function(task) {
+
+            return task.priority === "High";
+
+        });
+
+
+    if (highPriorityTask) {
+
+        recommendations.push(`
+            <div class="recommendation-item">
+
+                <strong>
+                    ⚡ High Priority
+                </strong>
+
+                <p>
+                    Focus on
+                    <b>
+                        ${escapeHTML(
+                            highPriorityTask.title
+                        )}
+                    </b>
+                    because it has high priority.
+                </p>
+
+            </div>
+        `);
+
+    }
+
+
+    /* Lowest progress */
+
+    const lowestProgressTask =
+        [...pendingTasks].sort(
+            function(a, b) {
+
+                return (
+                    Number(a.progress) -
+                    Number(b.progress)
+                );
+
+            }
+        )[0];
+
+
+    if (lowestProgressTask) {
+
+        recommendations.push(`
+            <div class="recommendation-item">
+
+                <strong>
+                    📊 Improve Your Progress
+                </strong>
+
+                <p>
+                    Consider spending more time on
+                    <b>
+                        ${escapeHTML(
+                            lowestProgressTask.title
+                        )}
+                    </b>
+                    because its current progress is
+                    ${lowestProgressTask.progress}%.
+                </p>
+
+            </div>
+        `);
+
+    }
+
+
+    /* Due date recommendation */
+
+    const sortedByDate =
+        [...pendingTasks].sort(
+            function(a, b) {
+
+                return (
+                    new Date(a.date) -
+                    new Date(b.date)
+                );
+
+            }
+        );
+
+
+    const nearestTask =
+        sortedByDate[0];
+
+
+    if (nearestTask) {
+
+        recommendations.push(`
+            <div class="recommendation-item">
+
+                <strong>
+                    📅 Upcoming Task
+                </strong>
+
+                <p>
+                    Your next scheduled task is
+                    <b>
+                        ${escapeHTML(
+                            nearestTask.title
+                        )}
+                    </b>
+                    on
+                    ${formatDate(
+                        nearestTask.date
+                    )}.
+                </p>
+
+            </div>
+        `);
+
+    }
+
+
+    /* Subject workload */
+
+    const subjectCount = {};
+
+
+    pendingTasks.forEach(
+        function(task) {
+
+            if (
+                !subjectCount[
+                    task.subject
+                ]
+            ) {
+
+                subjectCount[
+                    task.subject
+                ] = 0;
+
+            }
+
+
+            subjectCount[
+                task.subject
+            ]++;
+
+        }
+    );
+
+
+    let busiestSubject = null;
+
+    let highestCount = 0;
+
+
+    Object.keys(subjectCount)
+        .forEach(
+            function(subjectName) {
+
+                if (
+                    subjectCount[
+                        subjectName
+                    ] > highestCount
+                ) {
+
+                    highestCount =
+                        subjectCount[
+                            subjectName
+                        ];
+
+                    busiestSubject =
+                        subjectName;
+
+                }
+
+            }
+        );
+
+
+    if (busiestSubject) {
+
+        recommendations.push(`
+            <div class="recommendation-item">
+
+                <strong>
+                    📚 Subject Focus
+                </strong>
+
+                <p>
+                    You have
+                    <b>
+                        ${highestCount}
+                    </b>
+                    pending task(s) in
+                    <b>
+                        ${escapeHTML(
+                            busiestSubject
+                        )}
+                    </b>.
+                    Consider allocating additional
+                    study time to this subject.
+                </p>
+
+            </div>
+        `);
+
+    }
+
+
+    advancedRecommendation.innerHTML =
+        recommendations.join("");
+
+}
+
+
+/* =========================================
+   START NEW FEATURES
+========================================= */
+
+updateNotificationStatus();
+
+checkReminders();
+
+generateAdvancedRecommendations();
