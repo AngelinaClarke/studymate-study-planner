@@ -764,39 +764,49 @@ body.dark .cancel-btn {
 }
 
 /* =========================================
-   NOTIFICATIONS
+   NOTIFICATIONS & REMINDERS
 ========================================= */
 
 #notificationStatus {
     margin: 10px 0 15px;
-    color: #555;
+    color: #666;
 }
 
 #reminderList {
     margin-top: 20px;
 }
 
+/* Same box style as task cards */
 .reminder-item {
-    background: #f4f7ff;
+    background: #ffffff;
 
-    border: 1px solid #dbe4ff;
-    border-left: 5px solid #4f46e5;
-
-    padding: 18px;
-    margin-top: 12px;
-
+    border: 1px solid #e5e7eb;
     border-radius: 10px;
 
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 18px;
+    margin-bottom: 15px;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+
+    transition: 0.2s;
+}
+
+.reminder-item:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.09);
 }
 
 .reminder-item strong {
-    color: #333;
+    color: #4f46e5;
+
+    font-size: 17px;
 }
 
 .reminder-item p {
-    margin-top: 6px;
+    margin-top: 7px;
+
+    color: #555;
 }
 
 
@@ -808,29 +818,39 @@ body.dark .cancel-btn {
     margin-top: 20px;
 }
 
+/* Same card format */
 .schedule-item {
-    background: #f8f9ff;
+    background: #ffffff;
 
-    border: 1px solid #e5e7ff;
-    border-left: 5px solid #7c3aed;
-
-    padding: 18px;
-    margin-bottom: 12px;
-
+    border: 1px solid #e5e7eb;
     border-radius: 10px;
 
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 18px;
+    margin-bottom: 15px;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+
+    transition: 0.2s;
+}
+
+.schedule-item:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.09);
 }
 
 .schedule-item h3 {
-    margin: 0 0 10px 0;
+    margin: 0 0 12px 0;
 
-    color: #5b21b6;
+    color: #4f46e5;
+
+    font-size: 18px;
 }
 
 .schedule-item p {
     margin: 7px 0;
+
+    color: #555;
 }
 
 
@@ -842,27 +862,65 @@ body.dark .cancel-btn {
     margin-top: 15px;
 }
 
+/* Same card format */
 .recommendation-item {
-    background: #f0fdf4;
+    background: #ffffff;
 
-    border: 1px solid #dcfce7;
-    border-left: 5px solid #16a34a;
-
-    padding: 18px;
-    margin-bottom: 12px;
-
+    border: 1px solid #e5e7eb;
     border-radius: 10px;
 
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 18px;
+    margin-bottom: 15px;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+
+    transition: 0.2s;
+}
+
+.recommendation-item:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.09);
 }
 
 .recommendation-item strong {
-    color: #166534;
+    color: #4f46e5;
+
+    font-size: 17px;
 }
 
 .recommendation-item p {
-    margin-top: 7px;
+    margin-top: 8px;
+
+    color: #555;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   UNIFIED INNER BOX STYLE
+========================================= */
+
+.reminder-item,
+.schedule-item,
+.recommendation-item,
+.task-card,
+.planner-day {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.reminder-item:hover,
+.schedule-item:hover,
+.recommendation-item:hover,
+.task-card:hover,
+.planner-day:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 6px 15px rgba(0, 0, 0, 0.08);
 }
 
 
@@ -873,25 +931,150 @@ body.dark .cancel-btn {
 body.dark .reminder-item,
 body.dark .schedule-item,
 body.dark .recommendation-item {
-    background: #374151;
+    background: #1f2937;
 
     color: #f9fafb;
 
     border-color: #4b5563;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-body.dark .reminder-item strong {
-    color: #f9fafb;
-}
-
-body.dark .schedule-item h3 {
-    color: #c4b5fd;
-}
-
+body.dark .reminder-item strong,
+body.dark .schedule-item h3,
 body.dark .recommendation-item strong {
-    color: #86efac;
+    color: #a5b4fc;
+}
+
+body.dark .reminder-item p,
+body.dark .schedule-item p,
+body.dark .recommendation-item p {
+    color: #d1d5db;
 }
 
 body.dark #notificationStatus {
-    color: #ddd;
+    color: #d1d5db;
+}
+
+
+/* =========================================
+   MAKE PLANNER BOXES MATCH
+========================================= */
+
+.planner-day {
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    padding: 18px;
+
+    margin-bottom: 15px;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+body.dark .planner-day {
+    background: #1f2937;
+
+    border-color: #4b5563;
+
+    color: #f9fafb;
+}
+
+
+/* =========================================
+   MAKE SUBJECT PROGRESS LOOK LIKE BOXES
+========================================= */
+
+.subject-progress {
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    padding: 15px;
+
+    margin-bottom: 12px;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+body.dark .subject-progress {
+    background: #1f2937;
+
+    border-color: #4b5563;
+
+    color: #f9fafb;
+}
+
+
+/* =========================================
+   GOAL BOXES
+========================================= */
+
+.goal-item {
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    padding: 14px;
+
+    margin-top: 10px;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+body.dark .goal-item {
+    background: #1f2937;
+
+    border-color: #4b5563;
+
+    color: #f9fafb;
+}
+
+
+/* =========================================
+   CONSISTENT CARD HOVER
+========================================= */
+
+.card,
+.stat-card {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.card:hover,
+.stat-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 18px rgba(0, 0, 0, 0.10);
+}
+
+
+/* =========================================
+   MOBILE IMPROVEMENTS
+========================================= */
+
+@media (max-width: 500px) {
+
+    .reminder-item,
+    .schedule-item,
+    .recommendation-item,
+    .planner-day,
+    .subject-progress,
+    .goal-item {
+        padding: 15px;
+    }
+
 }
